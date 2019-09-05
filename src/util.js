@@ -31,7 +31,8 @@ export function monthDays (year, month, weekStart) {
 }
 
 export function monthDayIsDisabled (minDate, maxDate, year, month, day) {
-  const date = DateTime.fromObject({ year, month, day, zone: 'UTC' })
+  const zone = minDate ? minDate.zone : (maxDate ? maxDate.zone : 'UTC');
+  const date = DateTime.fromObject({ year, month, day, zone: zone })
 
   minDate = minDate ? startOfDay(minDate) : null
   maxDate = maxDate ? startOfDay(maxDate) : null
@@ -41,8 +42,9 @@ export function monthDayIsDisabled (minDate, maxDate, year, month, day) {
 }
 
 export function monthIsDisabled (minDate, maxDate, year, month) {
-  return (minDate && minDate > DateTime.utc(year, month, DateTime.utc(year, month).daysInMonth)) ||
-         (maxDate && maxDate < DateTime.utc(year, month, 1))
+  const zone = minDate ? minDate.zone : (maxDate ? maxDate.zone : 'UTC');
+  return (minDate && minDate > DateTime.fromObject({year, month, day: DateTime.fromObject({year, month, zone: zone}).daysInMonth, zone: zone})) ||
+         (maxDate && maxDate < DateTime.fromObject({year, month, day: 1, zone: zone}))
 }
 
 export function yearIsDisabled (minDate, maxDate, year) {
